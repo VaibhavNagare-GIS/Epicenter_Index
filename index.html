@@ -1,1 +1,376 @@
-404 Error
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Epicenter Index - Where the world's major earthquakes concentrate</title>
+<meta name="description" content="A geospatial analysis of 998 significant earthquakes (1995-2023, magnitude 6.5+), mapping where seismic activity concentrates and why.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="container">
+    <a class="wordmark" href="#top">
+      <svg class="wordmark-mark" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="13" cy="13" r="12" stroke="#14161A" stroke-width="1.5"/>
+        <circle cx="13" cy="13" r="4" fill="#2F5EFF"/>
+        <path d="M13 1 L13 5 M13 21 L13 25 M1 13 L5 13 M21 13 L25 13" stroke="#14161A" stroke-width="1.5" stroke-dasharray="2 2"/>
+      </svg>
+      Epicenter Index
+    </a>
+    <nav class="main-nav" aria-label="Section navigation">
+      <a href="#globe">Globe</a>
+      <a href="#method">Method</a>
+      <a href="#statistics">Statistics</a>
+      <a href="#interpretation">Interpretation</a>
+      <a href="#live">Live feed</a>
+      <a href="#data">Data</a>
+    </nav>
+    <span class="live-pill"><span class="live-dot" aria-hidden="true"></span> Live feed active</span>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="container">
+      <span class="hero-eyebrow">998 events &middot; 1995&ndash;2023 &middot; magnitude 6.5+</span>
+      <h1>Earthquakes don't happen<br>
+        <span class="accent-blue">evenly</span> across the planet.</h1>
+      <p class="hero-lead">Twenty-nine years of significant global earthquakes, mapped, gridded, and measured to
+        show exactly where seismic activity concentrates, and how much that answer depends on how you draw the grid.</p>
+      <div class="hero-actions">
+        <a href="#globe" class="btn btn-primary">Explore the globe</a>
+        <a href="#method" class="btn btn-secondary">See the method</a>
+      </div>
+
+      <div class="kpi-strip" id="hero-kpis" aria-label="Dataset summary statistics">
+        <!-- filled by main.js from EPICENTER_DATA.summary -->
+      </div>
+    </div>
+  </section>
+
+  <!-- GAP / PROBLEM -->
+  <section class="section-alt">
+    <div class="container gap-grid">
+      <div>
+        <span class="section-eyebrow">The gap</span>
+        <h2 class="reveal">A list of coordinates doesn't tell you where the risk is.</h2>
+        <p class="gap-lead reveal">Plot a thousand earthquakes on a map and the eye naturally looks for clusters. But
+          "looks clustered" isn't a number, and it isn't reproducible. Two people can stare at the same globe and
+          disagree about which region is really the hotspot.</p>
+        <p class="reveal">This project answers that with a grid: divide the world into fixed cells, count events per
+          cell, and rank them. It's simple, and that's the point, simple methods are the ones you can check, repeat,
+          and argue with. The tradeoff, and the part most dashboards skip, is that the cell size you pick changes the
+          answer. That tradeoff gets its own section below.</p>
+      </div>
+      <div class="gap-visual reveal">
+        <svg viewBox="0 0 320 260" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustration of a grid overlaid on scattered points, showing how concentration is counted per cell">
+          <defs>
+            <pattern id="grid-pat" width="40" height="40" patternUnits="userSpaceOnUse">
+              <path d="M40 0 L0 0 0 40" fill="none" stroke="#E2E4E9" stroke-width="1"/>
+            </pattern>
+          </defs>
+          <rect width="320" height="260" fill="url(#grid-pat)"/>
+          <rect x="120" y="80" width="80" height="80" fill="#E8EDFF" stroke="#2F5EFF" stroke-width="1.5"/>
+          <g fill="#14161A">
+            <circle cx="140" cy="100" r="4"/>
+            <circle cx="160" cy="115" r="5"/>
+            <circle cx="150" cy="135" r="3.5"/>
+            <circle cx="175" cy="140" r="6"/>
+            <circle cx="185" cy="105" r="4"/>
+            <circle cx="60" cy="60" r="3"/>
+            <circle cx="260" cy="180" r="3"/>
+            <circle cx="220" cy="40" r="3.5"/>
+            <circle cx="40" cy="200" r="3"/>
+          </g>
+          <text x="160" y="70" text-anchor="middle" font-family="JetBrains Mono" font-size="12" fill="#2F5EFF" font-weight="700">5 events / cell</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- GLOBE -->
+  <section id="globe">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">The globe</span>
+        <h2>Every event, plotted where it happened.</h2>
+        <p>Rotate and zoom freely. Switch between raw events and the concentration grid, and change the grid size to
+          see how the hotspots shift.</p>
+      </div>
+
+      <div class="globe-toolbar">
+        <div class="toggle-group" role="group" aria-label="Globe layer">
+          <button type="button" data-layer="events" aria-pressed="true">Events</button>
+          <button type="button" data-layer="hotspots" aria-pressed="false">Hotspots</button>
+          <button type="button" data-layer="both" aria-pressed="false">Both</button>
+        </div>
+        <label class="grid-select">
+          Grid size
+          <select id="grid-size-select">
+            <option value="5">5&deg;</option>
+            <option value="10" selected>10&deg;</option>
+            <option value="20">20&deg;</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="globe-frame">
+        <div id="globe-chart" role="img" aria-label="Interactive 3D globe of significant earthquakes, 1995 to 2023"></div>
+      </div>
+
+      <div class="globe-note">
+        <span>Colour encodes magnitude class. Marker size scales with magnitude. Hotspot circles scale with event count per cell.</span>
+        <button type="button" class="btn-text" id="toggle-table">View as data table</button>
+      </div>
+
+      <div class="data-table-wrap" id="data-table-wrap">
+        <table class="data-table" id="data-table">
+          <thead>
+            <tr><th>Date</th><th>Place</th><th>Magnitude</th><th>Class</th><th>Depth (km)</th><th>Tsunami flag</th></tr>
+          </thead>
+          <tbody id="data-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- METHOD -->
+  <section class="section-alt" id="method">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Method</span>
+        <h2>How the concentration numbers were built.</h2>
+        <p>Four steps, run once in Python before this page ever loads. Open any step to see what it actually does.</p>
+      </div>
+
+      <div class="accordion" id="method-accordion">
+        <div class="accordion-item">
+          <button class="accordion-trigger" aria-expanded="true">
+            Step 1. Clean the raw file
+            <span class="plus" aria-hidden="true"></span>
+          </button>
+          <div class="accordion-panel">
+            <div class="accordion-panel-inner">
+              <p>The source file has 1,000 rows. Column names get standardised, coordinates and magnitude get
+                converted to numbers, and rows with missing or out-of-range coordinates get dropped. Two exact
+                duplicate events get removed.</p>
+              <div class="stat-line">1,000 raw rows &rarr; 998 clean rows (2 removed as duplicates)</div>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-trigger" aria-expanded="false">
+            Step 2. Turn coordinates into real geometry
+            <span class="plus" aria-hidden="true"></span>
+          </button>
+          <div class="accordion-panel">
+            <div class="accordion-panel-inner">
+              <p>Each latitude and longitude pair becomes an actual Point geometry (GeoPandas, EPSG:4326), not just
+                two numbers in a spreadsheet. Every point gets checked for validity and confirmed to sit inside real
+                world bounds before anything gets plotted.</p>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-trigger" aria-expanded="false">
+            Step 3. Grid the world and count
+            <span class="plus" aria-hidden="true"></span>
+          </button>
+          <div class="accordion-panel">
+            <div class="accordion-panel-inner">
+              <p>The globe gets divided into fixed-size cells (5&deg;, 10&deg;, and 20&deg; versions were all built).
+                Every event falls into exactly one cell. Cells get ranked by event count, and the top cell's share of
+                all events becomes the headline concentration number.</p>
+              <div class="stat-line" id="grid-stat-line">Loading grid comparison…</div>
+              <p>This is the modifiable areal unit problem in practice: the same 998 points give a different
+                "how concentrated is it" answer depending only on the ruler you use to measure it. Neither answer is
+                wrong, they're measuring at different resolutions.</p>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-trigger" aria-expanded="false">
+            Step 4. Classify by magnitude
+            <span class="plus" aria-hidden="true"></span>
+          </button>
+          <div class="accordion-panel">
+            <div class="accordion-panel-inner">
+              <p>This dataset only contains significant earthquakes, magnitude 6.5 and above. A generic "below 3.0 /
+                3-4 / 4-5" scale would put every single row in one bucket, so the classes here are rebuilt to match
+                the data actually present: 6.5&ndash;6.9, 7.0&ndash;7.4, 7.5&ndash;7.9, 8.0&ndash;8.9, and 9.0+.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATISTICS -->
+  <section id="statistics">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Statistics</span>
+        <h2>The numbers behind the map.</h2>
+      </div>
+
+      <div class="stat-collage" id="stat-collage" aria-label="Key statistics">
+        <!-- filled by main.js -->
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card">
+          <h3>Magnitude distribution</h3>
+          <p class="chart-desc">How the 998 events split across the five rescaled magnitude classes.</p>
+          <div id="magnitude-chart" style="height:320px;"></div>
+        </div>
+        <div class="chart-card">
+          <h3>Events per year</h3>
+          <p class="chart-desc">Annual count of significant earthquakes, 1995 to 2023.</p>
+          <div id="time-chart" style="height:320px;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INTERPRETATION -->
+  <section class="section-alt" id="interpretation">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Interpretation</span>
+        <h2>What the pattern does, and doesn't, tell you.</h2>
+      </div>
+
+      <div class="accordion" id="interp-accordion">
+        <div class="accordion-item">
+          <button class="accordion-trigger" aria-expanded="true">
+            Why does the concentration sit where it does?
+            <span class="plus" aria-hidden="true"></span>
+          </button>
+          <div class="accordion-panel">
+            <div class="accordion-panel-inner">
+              <p>The busiest 10&deg; cell in this dataset covers the Vanuatu and Solomon Islands region of the
+                southwest Pacific. That's not a coincidence of this particular sample, it sits on the Pacific
+                "Ring of Fire," where the Pacific Plate meets the Australian Plate and several smaller plates. Plate
+                boundaries are where earthquakes concentrate globally, this dataset just makes that visible in
+                numbers instead of a general statement.</p>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-trigger" aria-expanded="false">
+            Does "concentrated" mean "most dangerous"?
+            <span class="plus" aria-hidden="true"></span>
+          </button>
+          <div class="accordion-panel">
+            <div class="accordion-panel-inner">
+              <p>No, and this is worth being direct about. Concentration here means event count per cell, not
+                casualties, damage, or population exposure. A remote ocean region can rank high on event count while
+                affecting almost no one. A single large event near a dense city can matter far more than a hundred
+                events in open ocean. This map answers "where do events cluster," not "where is the danger."</p>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-trigger" aria-expanded="false">
+            What's missing from this dataset?
+            <span class="plus" aria-hidden="true"></span>
+          </button>
+          <div class="accordion-panel">
+            <div class="accordion-panel-inner">
+              <p>Everything below magnitude 6.5. Small and moderate earthquakes are far more frequent than large
+                ones, and excluding them means this map understates total seismic activity everywhere, not just in
+                one region. It also can't say anything about detection bias in earlier decades of the range, older,
+                more remote events were historically harder to record precisely than recent ones.</p>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-trigger" aria-expanded="false">
+            Why show three grid sizes instead of one?
+            <span class="plus" aria-hidden="true"></span>
+          </button>
+          <div class="accordion-panel">
+            <div class="accordion-panel-inner">
+              <p>Because picking only one grid size hides a real limitation. A 5&deg; grid gives a sharper, noisier
+                picture. A 20&deg; grid smooths detail into broad regions. Showing all three, with their actual
+                numbers, is more honest than presenting a single figure as if it were the only possible answer.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIVE FEED -->
+  <section id="live">
+    <div class="container">
+      <div class="live-panel">
+        <span class="section-eyebrow">Beyond the assignment</span>
+        <h2>What's happening right now.</h2>
+        <p>This panel is independent of everything above. It pulls live, current events directly from the USGS
+          public earthquake feed at the moment you load this page. It is not part of the cited 1995&ndash;2023
+          dataset and isn't used in any of the statistics or charts on this page, it's here to show the same kind of
+          data arriving in real time.</p>
+        <ul class="live-list" id="live-list" aria-live="polite">
+          <li class="live-state">Loading live feed…</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- DATA & CITATION -->
+  <section class="section-alt" id="data">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Data & citation</span>
+        <h2>Where this came from.</h2>
+      </div>
+      <div class="citation-card">
+        <dl>
+          <dt>Dataset</dt><dd>"Earthquake", Faraz Rahman, Kaggle</dd>
+          <dt>Original source</dt><dd>U.S. Geological Survey (USGS) Earthquake Hazards Program</dd>
+          <dt>License</dt><dd>CC0: Public Domain (no attribution legally required; credited here for transparency)</dd>
+          <dt>File used</dt><dd>earthquake_95to23.csv, significant earthquakes, magnitude 6.5+, 1995&ndash;2023</dd>
+          <dt>Raw rows</dt><dd>1,000</dd>
+          <dt>Rows after cleaning</dt><dd>998 (2 exact duplicates removed)</dd>
+          <dt>Live panel source</dt><dd>USGS real-time GeoJSON feed, <code class="mono">significant_month.geojson</code></dd>
+          <dt>Development note</dt><dd>Built with AI assistance for code structure, debugging, and content drafting. All data cleaning logic, statistics, and figures were verified against the source file before publishing.</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <div class="wordmark" style="margin-bottom:0.5rem;">Epicenter Index</div>
+      <p class="footer-note">Vaibhav Shivaji Nagare</p>
+    </div>
+    <div class="connect-links">
+      <a href="https://www.linkedin.com/in/vaibhav-nagare-gis" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://github.com/VaibhavNagare-GIS" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script src="data/earthquakes.js"></script>
+<script src="js/main.js"></script>
+<script src="js/globe.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/live-feed.js"></script>
+</body>
+</html>
