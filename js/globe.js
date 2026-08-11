@@ -99,23 +99,46 @@
       bgcolor: "rgba(0,0,0,0)"
     },
     paper_bgcolor: "rgba(0,0,0,0)",
-    margin: { l: 0, r: 0, t: 0, b: 0 },
     font: { family: "Inter, sans-serif", size: 12, color: "#5B5F6B" },
-    legend: {
-      orientation: "h",
-      y: 0,
-      x: 0.5,
-      xanchor: "center",
-      bgcolor: "rgba(255,255,255,0.85)"
-    },
     showlegend: true
   };
+
+  // Legend sits bottom-right on wide screens so it never overlaps the globe.
+  // On narrow screens there isn't 150px to spare, so it drops to a horizontal
+  // strip under the globe instead, matching the space #globe-chart already has.
+  function legendLayoutFor(width) {
+    if (width < 640) {
+      return {
+        legend: {
+          orientation: "h", y: -0.05, yanchor: "top", x: 0.5, xanchor: "center",
+          bgcolor: "rgba(255,255,255,0.9)", bordercolor: "#E2E4E9", borderwidth: 1
+        },
+        margin: { l: 0, r: 0, t: 10, b: 70 }
+      };
+    }
+    return {
+      legend: {
+        orientation: "v", y: 0, yanchor: "bottom", x: 1, xanchor: "left",
+        bgcolor: "rgba(255,255,255,0.9)", bordercolor: "#E2E4E9", borderwidth: 1
+      },
+      margin: { l: 0, r: 150, t: 10, b: 10 }
+    };
+  }
 
   var config = { responsive: true, displaylogo: false, scrollZoom: false };
 
   var el = document.getElementById("globe-chart");
   if (el) {
+    Object.assign(layout, legendLayoutFor(window.innerWidth));
     Plotly.newPlot(el, eventTraces.concat([hotspotTrace]), layout, config);
+
+    var resizeTimer = null;
+    window.addEventListener("resize", function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        Plotly.relayout(el, legendLayoutFor(window.innerWidth));
+      }, 200);
+    });
   }
 
   // ---- Layer toggle ----
@@ -142,9 +165,22 @@
   if (gridSelect) {
     gridSelect.addEventListener("change", function () {
       currentGrid = Number(gridSelect.value);
-      var newTrace = buildHotspotTrace(currentGrid);
+
       var activeLayer = document.querySelector("[data-layer][aria-pressed='true']");
       var layerName = activeLayer ? activeLayer.getAttribute("data-layer") : "events";
+
+      // Root cause of "changing grid size does nothing": the hotspot trace is
+      // hidden whenever the layer is "Events", so a new grid size had nothing
+      // to show. Switch to "Both" so the new grid is always visible.
+      if (layerName === "events") {
+        layerName = "both";
+        toggleButtons.forEach(function (b) {
+          b.setAttribute("aria-pressed", b.getAttribute("data-layer") === "both" ? "true" : "false");
+        });
+        setLayer("both");
+      }
+
+      var newTrace = buildHotspotTrace(currentGrid);
       newTrace.visible = (layerName === "hotspots" || layerName === "both");
       Plotly.deleteTraces(el, hotspotIndex);
       Plotly.addTraces(el, newTrace, hotspotIndex);
