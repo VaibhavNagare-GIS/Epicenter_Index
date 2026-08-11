@@ -27,14 +27,7 @@
       </svg>
       Epicenter Index
     </a>
-    <nav class="main-nav" aria-label="Section navigation">
-      <a href="#globe">Globe</a>
-      <a href="#method">Method</a>
-      <a href="#statistics">Statistics</a>
-      <a href="#interpretation">Interpretation</a>
-      <a href="#live">Live feed</a>
-      <a href="#data">Data</a>
-    </nav>
+    <nav class="main-nav" aria-label="Section navigation"></nav>
     <span class="live-pill"><span class="live-dot" aria-hidden="true"></span> Live feed active</span>
   </div>
 </header>
@@ -43,6 +36,15 @@
 
   <!-- HERO -->
   <section class="hero" id="top">
+    <video class="hero-bg-video" autoplay muted loop playsinline aria-hidden="true">
+      <source src="assets/Earthquake_Destruction.mp4" type="video/mp4">
+    </video>
+    <div class="hero-video-overlay" aria-hidden="true"></div>
+    <div class="hero-shapes" aria-hidden="true">
+      <div class="hero-blob hero-blob-1"></div>
+      <div class="hero-blob hero-blob-2"></div>
+      <div class="hero-blob hero-blob-3"></div>
+    </div>
     <div class="container">
       <span class="hero-eyebrow">998 events &middot; 1995&ndash;2023 &middot; magnitude 6.5+</span>
       <h1>Earthquakes don't happen<br>
@@ -61,10 +63,10 @@
   </section>
 
   <!-- GAP / PROBLEM -->
-  <section class="section-alt">
+  <section class="section-alt" id="gap">
     <div class="container gap-grid">
       <div>
-        <span class="section-eyebrow">The gap</span>
+        <span class="section-eyebrow">Why a map alone isn't enough</span>
         <h2 class="reveal">A list of coordinates doesn't tell you where the risk is.</h2>
         <p class="gap-lead reveal">Plot a thousand earthquakes on a map and the eye naturally looks for clusters. But
           "looks clustered" isn't a number, and it isn't reproducible. Two people can stare at the same globe and
@@ -104,7 +106,7 @@
   <section id="globe">
     <div class="container">
       <div class="section-head">
-        <span class="section-eyebrow">The globe</span>
+        <span class="section-eyebrow">Interactive 3D globe</span>
         <h2>Every event, plotted where it happened.</h2>
         <p>Rotate and zoom freely. Switch between raw events and the concentration grid, and change the grid size to
           see how the hotspots shift.</p>
@@ -150,7 +152,7 @@
   <section class="section-alt" id="method">
     <div class="container">
       <div class="section-head">
-        <span class="section-eyebrow">Method</span>
+        <span class="section-eyebrow">How the numbers were built</span>
         <h2>How the concentration numbers were built.</h2>
         <p>Four steps, run once in Python before this page ever loads. Open any step to see what it actually does.</p>
       </div>
@@ -221,7 +223,7 @@
   <section id="statistics">
     <div class="container">
       <div class="section-head">
-        <span class="section-eyebrow">Statistics</span>
+        <span class="section-eyebrow">The dataset, by the numbers</span>
         <h2>The numbers behind the map.</h2>
       </div>
 
@@ -248,7 +250,7 @@
   <section class="section-alt" id="interpretation">
     <div class="container">
       <div class="section-head">
-        <span class="section-eyebrow">Interpretation</span>
+        <span class="section-eyebrow">Reading the pattern correctly</span>
         <h2>What the pattern does, and doesn't, tell you.</h2>
       </div>
 
