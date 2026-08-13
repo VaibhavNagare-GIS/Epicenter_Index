@@ -1,9 +1,7 @@
 // Epicenter Index — globe.js
 // Builds the interactive orthographic globe using Plotly.js (loaded via CDN in index.html).
-// Traces: five magnitude-class event traces, one grid-cell hotspot trace, and three
-// invisible "scale key" traces that exist only to give the hotspot legend real numbers.
-// A toggle group controls which layer is visible, a select controls which pre-computed
-// grid size (5/10/20 degrees) the hotspot trace uses.
+// Traces: five magnitude-class event traces, one grid-cell hotspot trace, and three invisible "scale key" traces that exist only to give the hotspot legend real numbers.
+// A toggle group controls which layer is visible, a select controls which pre-computed grid size (5/10/20 degrees) the hotspot trace uses.
 
 (function () {
   "use strict";
