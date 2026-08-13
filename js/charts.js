@@ -1,5 +1,6 @@
 // Epicenter Index — charts.js
 // Two supporting charts: magnitude class distribution (bar) and events per year (line).
+// Rendering is deliberately NOT triggered on DOMContentLoaded. The Charts tab is hidden at page load (display:none), and Plotly given a zero-width/zero-height container at draw time produces a broken, clipped, non-responsive chart that a later resize event does not reliably fix across Plotly versions. Instead, main.js's tab switcher calls window.EPICENTER_CHARTS.renderAll() the first time the Charts tab is actually shown, when the container has real dimensions.
 
 (function () {
   "use strict";
