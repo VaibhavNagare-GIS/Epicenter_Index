@@ -36,26 +36,22 @@
 
   <!-- HERO -->
   <section class="hero" id="top">
-    <video class="hero-bg-video" autoplay muted loop playsinline aria-hidden="true">
-      <source src="assets/Earthquake_Destruction.mp4" type="video/mp4">
-    </video>
-    <div class="hero-video-overlay" aria-hidden="true"></div>
-    <div class="hero-shapes" aria-hidden="true">
-      <div class="hero-blob hero-blob-1"></div>
-      <div class="hero-blob hero-blob-2"></div>
-      <div class="hero-blob hero-blob-3"></div>
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <span class="hero-eyebrow">998 events &middot; 1995&ndash;2023 &middot; magnitude 6.5+</span>
+        <h1>Earthquakes don't happen <span class="accent-blue">evenly</span> across the planet.</h1>
+        <p class="hero-lead">Twenty-nine years of significant global earthquakes, mapped, gridded, and measured to
+          show exactly where seismic activity concentrates, and how much that answer depends on how you draw the grid.</p>
+      </div>
+      <div class="hero-visual">
+        <img src="assets/Earthquake_Hero.png" alt="Illustration of earthquake damage: cracked roads and buildings with structural damage" class="hero-hero-image" loading="eager">
+      </div>
     </div>
     <div class="container">
-      <span class="hero-eyebrow">998 events &middot; 1995&ndash;2023 &middot; magnitude 6.5+</span>
-      <h1>Earthquakes don't happen<br>
-        <span class="accent-blue">evenly</span> across the planet.</h1>
-      <p class="hero-lead">Twenty-nine years of significant global earthquakes, mapped, gridded, and measured to
-        show exactly where seismic activity concentrates, and how much that answer depends on how you draw the grid.</p>
-      <div class="hero-actions">
-        <a href="#globe" class="btn btn-primary">Explore the globe</a>
-        <a href="#method" class="btn btn-secondary">See the method</a>
+      <div class="kpi-strip-head">
+        <span class="section-eyebrow">Calculated dataset summary &middot; 1995&ndash;2023</span>
+        <p class="kpi-strip-note">These five numbers describe the fixed, cited dataset below, not the Live Monitor globe, which pulls whatever USGS has recorded in the last 30 days.</p>
       </div>
-
       <div class="kpi-strip" id="hero-kpis" aria-label="Dataset summary statistics">
         <!-- filled by main.js from EPICENTER_DATA.summary -->
       </div>
@@ -64,40 +60,56 @@
 
   <!-- GAP / PROBLEM -->
   <section class="section-alt" id="gap">
-    <div class="container gap-grid">
-      <div>
+    <div class="container">
+      <div class="section-head">
         <span class="section-eyebrow">Why a map alone isn't enough</span>
         <h2 class="reveal">A list of coordinates doesn't tell you where the risk is.</h2>
-        <p class="gap-lead reveal">Plot a thousand earthquakes on a map and the eye naturally looks for clusters. But
-          "looks clustered" isn't a number, and it isn't reproducible. Two people can stare at the same globe and
-          disagree about which region is really the hotspot.</p>
-        <p class="reveal">This project answers that with a grid: divide the world into fixed cells, count events per
-          cell, and rank them. It's simple, and that's the point, simple methods are the ones you can check, repeat,
-          and argue with. The tradeoff, and the part most dashboards skip, is that the cell size you pick changes the
-          answer. That tradeoff gets its own section below.</p>
+        <p class="reveal">Plot a thousand earthquakes on a map and the eye naturally looks for clusters. But
+          "looks clustered" isn't a number, and it isn't reproducible.</p>
       </div>
-      <div class="gap-visual reveal">
-        <svg viewBox="0 0 320 260" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustration of a grid overlaid on scattered points, showing how concentration is counted per cell">
-          <defs>
-            <pattern id="grid-pat" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M40 0 L0 0 0 40" fill="none" stroke="#E2E4E9" stroke-width="1"/>
-            </pattern>
-          </defs>
-          <rect width="320" height="260" fill="url(#grid-pat)"/>
-          <rect x="120" y="80" width="80" height="80" fill="#E8EDFF" stroke="#2F5EFF" stroke-width="1.5"/>
-          <g fill="#14161A">
-            <circle cx="140" cy="100" r="4"/>
-            <circle cx="160" cy="115" r="5"/>
-            <circle cx="150" cy="135" r="3.5"/>
-            <circle cx="175" cy="140" r="6"/>
-            <circle cx="185" cy="105" r="4"/>
-            <circle cx="60" cy="60" r="3"/>
-            <circle cx="260" cy="180" r="3"/>
-            <circle cx="220" cy="40" r="3.5"/>
-            <circle cx="40" cy="200" r="3"/>
-          </g>
-          <text x="160" y="70" text-anchor="middle" font-family="JetBrains Mono" font-size="12" fill="#2F5EFF" font-weight="700">5 events / cell</text>
-        </svg>
+
+      <div class="point-card-row">
+        <div class="point-card point-card-blue reveal">
+          <span class="point-card-num">01</span>
+          <h3>The problem</h3>
+          <p>Two people can stare at the same globe of scattered points and disagree about which region is really
+            the hotspot. A visual impression isn't a measurement.</p>
+        </div>
+        <div class="point-card point-card-green reveal">
+          <span class="point-card-num">02</span>
+          <h3>The method</h3>
+          <p>Divide the world into fixed grid cells, count events per cell, and rank them. Simple enough that
+            anyone can check it, repeat it, or argue with it.</p>
+        </div>
+        <div class="point-card point-card-gold reveal">
+          <span class="point-card-num">03</span>
+          <h3>The tradeoff</h3>
+          <p>The cell size you pick changes the answer. Most dashboards skip this part. The Method section below
+            shows exactly how much it moves.</p>
+        </div>
+        <div class="point-card point-card-visual reveal">
+          <svg viewBox="0 0 200 160" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustration of a grid overlaid on scattered points, showing how concentration is counted per cell">
+            <defs>
+              <pattern id="grid-pat" width="24" height="24" patternUnits="userSpaceOnUse">
+                <path d="M24 0 L0 0 0 24" fill="none" stroke="#E2E4E9" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect width="200" height="160" fill="url(#grid-pat)"/>
+            <rect x="70" y="48" width="60" height="56" fill="#E8EDFF" stroke="#2F5EFF" stroke-width="1.5"/>
+            <g fill="#14161A">
+              <circle cx="82" cy="60" r="3"/>
+              <circle cx="96" cy="70" r="3.5"/>
+              <circle cx="90" cy="84" r="2.5"/>
+              <circle cx="106" cy="88" r="4"/>
+              <circle cx="112" cy="64" r="3"/>
+              <circle cx="30" cy="30" r="2.5"/>
+              <circle cx="160" cy="112" r="2.5"/>
+              <circle cx="138" cy="20" r="2.5"/>
+              <circle cx="20" cy="126" r="2.5"/>
+            </g>
+            <text x="100" y="38" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#2F5EFF" font-weight="700">5 events / cell</text>
+          </svg>
+        </div>
       </div>
     </div>
   </section>
@@ -108,11 +120,22 @@
       <div class="section-head">
         <span class="section-eyebrow">Interactive 3D globe</span>
         <h2>Every event, plotted where it happened.</h2>
-        <p>Rotate and zoom freely. Switch between raw events and the concentration grid, and change the grid size to
-          see how the hotspots shift.</p>
+        <p id="globe-mode-desc">Rotate and zoom freely. Switch between raw events and the concentration grid, and
+          change the grid size to see how the hotspots shift.</p>
       </div>
 
-      <div class="globe-toolbar">
+      <div class="globe-mode-toggle" role="group" aria-label="Globe dataset">
+        <button type="button" class="globe-mode-btn" data-globe-mode="calculated" aria-pressed="true">
+          <span class="globe-mode-dot" style="background:var(--violet)"></span>
+          Historical Dataset <span class="globe-mode-sub">998 events, 1995&ndash;2023</span>
+        </button>
+        <button type="button" class="globe-mode-btn" data-globe-mode="live" aria-pressed="false">
+          <span class="globe-mode-dot globe-mode-dot-live" style="background:var(--coral)"></span>
+          Live Monitor <span class="globe-mode-sub">USGS, last 30 days</span>
+        </button>
+      </div>
+
+      <div class="globe-toolbar" id="calculated-toolbar">
         <div class="toggle-group" role="group" aria-label="Globe layer">
           <button type="button" data-layer="events" aria-pressed="true">Events</button>
           <button type="button" data-layer="hotspots" aria-pressed="false">Hotspots</button>
@@ -128,12 +151,29 @@
         </label>
       </div>
 
+      <div class="globe-toolbar" id="live-toolbar" hidden>
+        <div class="toggle-group" id="live-alert-filter" role="group" aria-label="Filter by USGS alert level">
+          <button type="button" data-alert="all" aria-pressed="true">All</button>
+          <button type="button" data-alert="green" aria-pressed="true">Green</button>
+          <button type="button" data-alert="yellow" aria-pressed="true">Yellow/Orange</button>
+          <button type="button" data-alert="red" aria-pressed="true">Red</button>
+          <button type="button" data-alert="none" aria-pressed="true">No alert</button>
+        </div>
+        <label class="grid-select" id="live-mag-filter-wrap">
+          Min magnitude
+          <select id="live-mag-select">
+            <option value="0">All</option>
+          </select>
+        </label>
+      </div>
+
       <div class="globe-frame">
         <div id="globe-chart" role="img" aria-label="Interactive 3D globe of significant earthquakes, 1995 to 2023"></div>
+        <div id="live-globe-status" class="globe-status" hidden></div>
       </div>
 
       <div class="globe-note">
-        <span>Colour encodes magnitude class. Marker size scales with magnitude. Hotspot circles scale with event count per cell.</span>
+        <span id="globe-note-text">Colour encodes magnitude class. Marker size scales with magnitude. Hotspot circles scale with event count per cell.</span>
         <button type="button" class="btn-text" id="toggle-table">View as data table</button>
       </div>
 
@@ -148,8 +188,19 @@
     </div>
   </section>
 
-  <!-- METHOD -->
-  <section class="section-alt" id="method">
+  <!-- METHOD / STATISTICS / INTERPRETATION / LIVE / DATA — single tabbed area -->
+  <section id="details">
+    <div class="container">
+      <div class="details-tabbar" role="tablist" aria-label="Report sections">
+        <button type="button" id="tab-method" class="details-tab" role="tab" data-tab="method" aria-selected="true">Method</button>
+        <button type="button" id="tab-statistics" class="details-tab" role="tab" data-tab="statistics" aria-selected="false">Statistics</button>
+        <button type="button" id="tab-charts" class="details-tab" role="tab" data-tab="charts" aria-selected="false">Charts</button>
+        <button type="button" id="tab-interpretation" class="details-tab" role="tab" data-tab="interpretation" aria-selected="false">Interpretation</button>
+        <button type="button" id="tab-data" class="details-tab" role="tab" data-tab="data" aria-selected="false">Data &amp; citation</button>
+      </div>
+    </div>
+
+  <div class="section-alt tabpanel" id="method" role="tabpanel" aria-labelledby="tab-method">
     <div class="container">
       <div class="section-head">
         <span class="section-eyebrow">How the numbers were built</span>
@@ -159,7 +210,7 @@
 
       <div class="accordion" id="method-accordion">
         <div class="accordion-item">
-          <button class="accordion-trigger" aria-expanded="true">
+          <button class="accordion-trigger" aria-expanded="false">
             Step 1. Clean the raw file
             <span class="plus" aria-hidden="true"></span>
           </button>
@@ -217,10 +268,10 @@
         </div>
       </div>
     </div>
-  </section>
+  </div>
 
   <!-- STATISTICS -->
-  <section id="statistics">
+  <div id="statistics" class="tabpanel" role="tabpanel" aria-labelledby="tab-statistics" hidden>
     <div class="container">
       <div class="section-head">
         <span class="section-eyebrow">The dataset, by the numbers</span>
@@ -230,24 +281,40 @@
       <div class="stat-collage" id="stat-collage" aria-label="Key statistics">
         <!-- filled by main.js -->
       </div>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div id="charts" class="tabpanel" role="tabpanel" aria-labelledby="tab-charts" hidden>
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Same data, plotted two ways</span>
+        <h2>Magnitude spread and events over time.</h2>
+      </div>
 
       <div class="chart-grid">
         <div class="chart-card">
           <h3>Magnitude distribution</h3>
           <p class="chart-desc">How the 998 events split across the five rescaled magnitude classes.</p>
-          <div id="magnitude-chart" style="height:320px;"></div>
+          <div id="magnitude-chart" class="chart-canvas"></div>
+          <p class="chart-caption">625 of the 998 events (63%) sit in the lowest bucket, 6.5&ndash;6.9. Each class
+            above it is rarer than the last, the same "small quakes vastly outnumber large ones" pattern seen
+            globally, just scoped to this magnitude-6.5-and-up dataset.</p>
         </div>
         <div class="chart-card">
           <h3>Events per year</h3>
           <p class="chart-desc">Annual count of significant earthquakes, 1995 to 2023.</p>
-          <div id="time-chart" style="height:320px;"></div>
+          <div id="time-chart" class="chart-canvas"></div>
+          <p class="chart-caption">Counts swing between 23 events (1998) and 53 (2013), averaging about 34 a
+            year. There's a slight upward drift across the 29 years, but year-to-year noise is larger than the
+            trend, and part of any drift could reflect better detection in later decades, not more earthquakes.</p>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 
   <!-- INTERPRETATION -->
-  <section class="section-alt" id="interpretation">
+  <div class="section-alt tabpanel" id="interpretation" role="tabpanel" aria-labelledby="tab-interpretation" hidden>
     <div class="container">
       <div class="section-head">
         <span class="section-eyebrow">Reading the pattern correctly</span>
@@ -256,7 +323,7 @@
 
       <div class="accordion" id="interp-accordion">
         <div class="accordion-item">
-          <button class="accordion-trigger" aria-expanded="true">
+          <button class="accordion-trigger" aria-expanded="false">
             Why does the concentration sit where it does?
             <span class="plus" aria-hidden="true"></span>
           </button>
@@ -313,27 +380,10 @@
         </div>
       </div>
     </div>
-  </section>
-
-  <!-- LIVE FEED -->
-  <section id="live">
-    <div class="container">
-      <div class="live-panel">
-        <span class="section-eyebrow">Beyond the assignment</span>
-        <h2>What's happening right now.</h2>
-        <p>This panel is independent of everything above. It pulls live, current events directly from the USGS
-          public earthquake feed at the moment you load this page. It is not part of the cited 1995&ndash;2023
-          dataset and isn't used in any of the statistics or charts on this page, it's here to show the same kind of
-          data arriving in real time.</p>
-        <ul class="live-list" id="live-list" aria-live="polite">
-          <li class="live-state">Loading live feed…</li>
-        </ul>
-      </div>
-    </div>
-  </section>
+  </div>
 
   <!-- DATA & CITATION -->
-  <section class="section-alt" id="data">
+  <div class="section-alt tabpanel" id="data" role="tabpanel" aria-labelledby="tab-data" hidden>
     <div class="container">
       <div class="section-head">
         <span class="section-eyebrow">Data & citation</span>
@@ -341,17 +391,17 @@
       </div>
       <div class="citation-card">
         <dl>
-          <dt>Dataset</dt><dd>"Earthquake", Faraz Rahman, Kaggle</dd>
-          <dt>Original source</dt><dd>U.S. Geological Survey (USGS) Earthquake Hazards Program</dd>
-          <dt>License</dt><dd>CC0: Public Domain (no attribution legally required; credited here for transparency)</dd>
+          <dt>Dataset</dt><dd><a href="https://www.kaggle.com/datasets/farazrahman/earthquake" target="_blank" rel="noopener">"Earthquake", Faraz Rahman, Kaggle</a></dd>
+          <dt>Original source</dt><dd><a href="https://www.usgs.gov/programs/earthquake-hazards" target="_blank" rel="noopener">U.S. Geological Survey (USGS) Earthquake Hazards Program</a></dd>
+          <dt>License</dt><dd><a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener">CC0 1.0: Public Domain Dedication</a> (no attribution legally required; credited here for transparency)</dd>
           <dt>File used</dt><dd>earthquake_95to23.csv, significant earthquakes, magnitude 6.5+, 1995&ndash;2023</dd>
           <dt>Raw rows</dt><dd>1,000</dd>
           <dt>Rows after cleaning</dt><dd>998 (2 exact duplicates removed)</dd>
-          <dt>Live panel source</dt><dd>USGS real-time GeoJSON feed, <code class="mono">significant_month.geojson</code></dd>
-          <dt>Development note</dt><dd>Built with AI assistance for code structure, debugging, and content drafting. All data cleaning logic, statistics, and figures were verified against the source file before publishing.</dd>
+          <dt>Live globe source</dt><dd><a href="https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php" target="_blank" rel="noopener">USGS real-time GeoJSON feed documentation</a>, <code class="mono">significant_month.geojson</code>. This feed is filtered by USGS's significance score (magnitude + felt reports + estimated impact), not by a fixed magnitude cutoff, so it can include events below magnitude 6.5. That's expected, and it's why its numbers differ from the calculated globe above.</dd>
         </dl>
       </div>
     </div>
+  </div>
   </section>
 
 </main>
@@ -361,10 +411,17 @@
     <div>
       <div class="wordmark" style="margin-bottom:0.5rem;">Epicenter Index</div>
       <p class="footer-note">Vaibhav Shivaji Nagare</p>
+      <p class="footer-note footer-repo"><a href="https://github.com/VaibhavNagare-GIS/Epicenter_Index" target="_blank" rel="noopener">View source on GitHub &rarr;</a></p>
     </div>
     <div class="connect-links">
-      <a href="https://www.linkedin.com/in/vaibhav-nagare-gis" target="_blank" rel="noopener">LinkedIn</a>
-      <a href="https://github.com/VaibhavNagare-GIS" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/vaibhav-nagare-gis" target="_blank" rel="noopener" class="connect-link connect-link-linkedin" aria-label="LinkedIn">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667h-3.554V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.928-2.063-2.063 0-1.139.919-2.063 2.063-2.063 1.14 0 2.063.924 2.063 2.063 0 1.135-.923 2.063-2.063 2.063zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+      </a>
+      <a href="https://github.com/VaibhavNagare-GIS" target="_blank" rel="noopener" class="connect-link connect-link-github" aria-label="GitHub">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 .5C5.65.5.5 5.65.5 12c0 5.1 3.29 9.42 7.86 10.94.57.1.78-.25.78-.55 0-.27-.01-1.16-.02-2.1-3.2.7-3.87-1.35-3.87-1.35-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.17.08 1.78 1.2 1.78 1.2 1.03 1.77 2.72 1.26 3.38.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.18-1.18 3.18-1.18.63 1.59.23 2.76.11 3.05.74.81 1.18 1.83 1.18 3.09 0 4.41-2.69 5.38-5.25 5.67.41.36.78 1.06.78 2.14 0 1.55-.01 2.8-.01 3.18 0 .3.2.66.79.55A10.51 10.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
+        GitHub
+      </a>
     </div>
   </div>
 </footer>
@@ -374,5 +431,6 @@
 <script src="js/globe.js"></script>
 <script src="js/charts.js"></script>
 <script src="js/live-feed.js"></script>
+<script src="js/live-globe.js"></script>
 </body>
 </html>
