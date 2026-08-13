@@ -171,10 +171,7 @@
         panel.hidden = false;
 
         if (target === "charts") {
-          // Plotly charts drawn into a display:none container come out at zero
-          // size. Render them for the first time only once the tab (and its
-          // container) actually has real dimensions; resize on later visits
-          // in case the window changed size while the tab was hidden.
+          // Plotly charts drawn into a display:none container come out at zero size. Render them for the first time only once the tab (and its container) actually has real dimensions; resize on later visits in case the window changed size while the tab was hidden.
           if (window.EPICENTER_CHARTS) {
             if (!shown[target]) {
               window.EPICENTER_CHARTS.renderAll();
@@ -188,8 +185,6 @@
           shown[target] = true;
           fixAccordionHeights(panel);
         }
-
-        panel.scrollIntoView({ behavior: "smooth", block: "start" });
       });
     });
   }
