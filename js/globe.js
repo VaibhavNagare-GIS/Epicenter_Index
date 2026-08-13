@@ -1,7 +1,9 @@
 // Epicenter Index — globe.js
 // Builds the interactive orthographic globe using Plotly.js (loaded via CDN in index.html).
-// Two traces: raw events, and grid-cell hotspots. A toggle group controls which is visible,
-// a select controls which pre-computed grid size (5/10/20 degrees) the hotspot trace uses.
+// Traces: five magnitude-class event traces, one grid-cell hotspot trace, and three
+// invisible "scale key" traces that exist only to give the hotspot legend real numbers.
+// A toggle group controls which layer is visible, a select controls which pre-computed
+// grid size (5/10/20 degrees) the hotspot trace uses.
 
 (function () {
   "use strict";
@@ -25,6 +27,10 @@
     return Math.max(4, Math.min(size, 16));
   }
 
+  function hotspotDiameter(count, maxCount) {
+    return 8 + 26 * Math.sqrt(count / maxCount);
+  }
+
   function buildEventTraces() {
     // One trace per magnitude class so the legend is meaningful and colour-accessible
     // (colour + legend label together, not colour alone).
@@ -34,6 +40,7 @@
         type: "scattergeo",
         mode: "markers",
         name: cls,
+        legend: "legend",
         lat: subset.map(function (e) { return e.lat; }),
         lon: subset.map(function (e) { return e.lon; }),
         text: subset.map(function (e) {
@@ -45,8 +52,8 @@
         marker: {
           size: subset.map(function (e) { return markerSize(e.mag); }),
           color: CLASS_COLOR[cls],
-          opacity: 0.85,
-          line: { width: 0.5, color: "#ffffff" }
+          opacity: 0.95,
+          line: { width: 0.75, color: "#ffffff" }
         },
         legendgroup: "events",
         visible: true
@@ -54,13 +61,14 @@
     });
   }
 
-  function buildHotspotTrace(gridSize) {
+  function buildHotspotTrace(gridSize, visible) {
     var cells = DATA.grids[String(gridSize)].cells;
     var maxCount = Math.max.apply(null, cells.map(function (c) { return c.count; }));
     return {
       type: "scattergeo",
       mode: "markers",
-      name: gridSize + "\u00b0 hotspots",
+      name: gridSize + "\u00b0 grid cells",
+      legend: "legend2",
       lat: cells.map(function (c) { return c.lat; }),
       lon: cells.map(function (c) { return c.lon; }),
       text: cells.map(function (c) {
@@ -70,85 +78,181 @@
       }),
       hoverinfo: "text",
       marker: {
-        size: cells.map(function (c) { return 8 + 26 * Math.sqrt(c.count / maxCount); }),
+        size: cells.map(function (c) { return hotspotDiameter(c.count, maxCount); }),
         sizemode: "diameter",
-        color: "#7C5CFC",
-        opacity: 0.35,
-        line: { width: 1.5, color: "#4A32C9" }
+        color: "#FFD400",
+        opacity: 0.5,
+        line: { width: 1.75, color: "#B8860B" }
       },
-      visible: false
+      legendgroup: "hotspots",
+      visible: !!visible
     };
+  }
+
+  // Three invisible-on-map points whose only job is to put real numbers on the
+  // hotspot circle sizes in the legend (fewest / typical / busiest cell), computed
+  // fresh from the actual grid data, not estimated.
+  function buildScaleTraces(gridSize, visible) {
+    var cells = DATA.grids[String(gridSize)].cells;
+    var counts = cells.map(function (c) { return c.count; }).sort(function (a, b) { return a - b; });
+    var maxCount = counts[counts.length - 1];
+    var minCount = counts[0];
+    var medCount = counts[Math.floor(counts.length / 2)];
+    var points = [
+      { count: maxCount, label: maxCount + " events (busiest cell)" },
+      { count: medCount, label: medCount + " events (typical cell)" },
+      { count: minCount, label: minCount + " events (fewest)" }
+    ];
+    return points.map(function (p) {
+      return {
+        type: "scattergeo",
+        mode: "markers",
+        lat: [null],
+        lon: [null],
+        name: p.label,
+        legend: "legend2",
+        legendgroup: "hotspot-scale",
+        hoverinfo: "skip",
+        marker: {
+          size: hotspotDiameter(p.count, maxCount),
+          sizemode: "diameter",
+          color: "#FFD400",
+          opacity: 0.5,
+          line: { width: 1.75, color: "#B8860B" }
+        },
+        visible: !!visible
+      };
+    });
   }
 
   var eventTraces = buildEventTraces();
   var currentGrid = 10;
-  var hotspotTrace = buildHotspotTrace(currentGrid);
-  var hotspotIndex = eventTraces.length; // hotspot trace sits after all event-class traces
+  var hotspotVisible = false;
+  var currentLayer = "events";
+  var hotspotTrace = buildHotspotTrace(currentGrid, hotspotVisible);
+  var scaleTraces = buildScaleTraces(currentGrid, hotspotVisible);
 
-  var layout = {
+  function allTraces() {
+    return eventTraces.concat([hotspotTrace]).concat(scaleTraces);
+  }
+
+  // Satellite-style basemap: deep ocean blue, warm tan/brown land, so both the
+  // event markers and the hotspot circles read clearly against it.
+  var baseLayout = {
     geo: {
       projection: { type: "orthographic" },
       showland: true,
-      landcolor: "#F6F7F9",
+      landcolor: "#C9A876",
       showocean: true,
-      oceancolor: "#FFFFFF",
+      oceancolor: "#1D4E89",
       showcountries: true,
-      countrycolor: "#E2E4E9",
-      coastlinecolor: "#D5D8DE",
+      countrycolor: "#8A6D3B",
+      coastlinecolor: "#0D2C4F",
+      showlakes: true,
+      lakecolor: "#1D4E89",
       showframe: false,
       bgcolor: "rgba(0,0,0,0)"
     },
     paper_bgcolor: "rgba(0,0,0,0)",
     font: { family: "Inter, sans-serif", size: 12, color: "#5B5F6B" },
-    showlegend: true
+    showlegend: true,
+    // Keeps the user's rotate/zoom position when we rebuild traces on grid change.
+    uirevision: "epicenter-globe"
   };
 
-  // Legend sits bottom-right on wide screens so it never overlaps the globe.
-  // On narrow screens there isn't 150px to spare, so it drops to a horizontal
-  // strip under the globe instead, matching the space #globe-chart already has.
-  function legendLayoutFor(width) {
+  var legendStyle = {
+    font: { size: 13, color: "#14161A", family: "Inter, sans-serif" },
+    bgcolor: "rgba(255,255,255,0.96)",
+    bordercolor: "#E2E4E9",
+    borderwidth: 1.5
+  };
+
+  // The hotspot legend (legend2) moves depending on what's actually showing:
+  // - "events" layer: legend2 has no visible entries, position is irrelevant.
+  // - "hotspots" only: legend2 takes the SAME top-right slot the events legend
+  //   normally occupies (there's nothing else there to share it with).
+  // - "both": legend2 drops below the events legend so the two don't overlap.
+  function legend2Position(layer, width) {
+    var stacked = (layer === "both");
+    if (width < 640) return stacked ? -0.34 : -0.04;
+    return stacked ? 0.46 : 1;
+  }
+
+  // Two stacked legend boxes on wide screens (magnitude classes on top, hotspot
+  // scale below it when both are visible), collapsing to two horizontal rows
+  // under the globe on phones.
+  function legendLayoutFor(width, layer) {
+    var legend2Y = legend2Position(layer, width);
     if (width < 640) {
       return {
-        legend: {
-          orientation: "h", y: -0.05, yanchor: "top", x: 0.5, xanchor: "center",
-          bgcolor: "rgba(255,255,255,0.9)", bordercolor: "#E2E4E9", borderwidth: 1
-        },
-        margin: { l: 0, r: 0, t: 10, b: 70 }
+        legend: Object.assign({}, legendStyle, {
+          title: { text: "Magnitude class" },
+          orientation: "h", y: -0.04, yanchor: "top", x: 0.5, xanchor: "center"
+        }),
+        legend2: Object.assign({}, legendStyle, {
+          title: { text: "Hotspot scale (events / cell)" },
+          orientation: "h", y: legend2Y, yanchor: "top", x: 0.5, xanchor: "center"
+        }),
+        margin: { l: 0, r: 0, t: 10, b: 190 }
       };
     }
     return {
-      legend: {
-        orientation: "v", y: 0, yanchor: "bottom", x: 1, xanchor: "left",
-        bgcolor: "rgba(255,255,255,0.9)", bordercolor: "#E2E4E9", borderwidth: 1
-      },
-      margin: { l: 0, r: 150, t: 10, b: 10 }
+      legend: Object.assign({}, legendStyle, {
+        title: { text: "Magnitude class" },
+        orientation: "v", y: 1, yanchor: "top", x: 1.02, xanchor: "left"
+      }),
+      legend2: Object.assign({}, legendStyle, {
+        title: { text: "Hotspot scale (events / cell)" },
+        orientation: "v", y: legend2Y, yanchor: "top", x: 1.02, xanchor: "left"
+      }),
+      margin: { l: 0, r: 200, t: 10, b: 10 }
     };
   }
 
-  var config = { responsive: true, displaylogo: false, scrollZoom: false };
+  var config = { responsive: true, displaylogo: false, scrollZoom: true };
 
   var el = document.getElementById("globe-chart");
+
+  function mount() {
+    if (!el) return;
+    var layout = Object.assign({}, baseLayout, legendLayoutFor(window.innerWidth, currentLayer));
+    Plotly.newPlot(el, allTraces(), layout, config);
+  }
+
+  function unmount() {
+    if (!el) return;
+    Plotly.purge(el);
+  }
+
   if (el) {
-    Object.assign(layout, legendLayoutFor(window.innerWidth));
-    Plotly.newPlot(el, eventTraces.concat([hotspotTrace]), layout, config);
+    mount();
 
     var resizeTimer = null;
     window.addEventListener("resize", function () {
+      // Only this globe's resize handler should touch the shared chart div;
+      // the live globe has its own handler guarded the same way.
+      if (window.EPICENTER_ACTIVE_GLOBE !== "calculated") return;
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(function () {
-        Plotly.relayout(el, legendLayoutFor(window.innerWidth));
+        Plotly.relayout(el, legendLayoutFor(window.innerWidth, currentLayer));
       }, 200);
     });
   }
 
+  window.EPICENTER_CALC_GLOBE = { mount: mount, unmount: unmount };
+  window.EPICENTER_ACTIVE_GLOBE = "calculated";
+
   // ---- Layer toggle ----
   function setLayer(layer) {
+    currentLayer = layer;
     var eventsVisible = layer === "events" || layer === "both";
-    var hotspotsVisible = layer === "hotspots" || layer === "both";
+    hotspotVisible = (layer === "hotspots" || layer === "both");
     var update = { visible: [] };
     for (var i = 0; i < eventTraces.length; i++) update.visible.push(eventsVisible);
-    update.visible.push(hotspotsVisible);
+    update.visible.push(hotspotVisible); // hotspot trace
+    for (var j = 0; j < scaleTraces.length; j++) update.visible.push(hotspotVisible);
     Plotly.restyle(el, update);
+    Plotly.relayout(el, { "legend2.y": legend2Position(layer, window.innerWidth) });
   }
 
   var toggleButtons = document.querySelectorAll("[data-layer]");
@@ -177,13 +281,18 @@
         toggleButtons.forEach(function (b) {
           b.setAttribute("aria-pressed", b.getAttribute("data-layer") === "both" ? "true" : "false");
         });
-        setLayer("both");
       }
+      currentLayer = layerName;
 
-      var newTrace = buildHotspotTrace(currentGrid);
-      newTrace.visible = (layerName === "hotspots" || layerName === "both");
-      Plotly.deleteTraces(el, hotspotIndex);
-      Plotly.addTraces(el, newTrace, hotspotIndex);
+      hotspotVisible = (layerName === "hotspots" || layerName === "both");
+      hotspotTrace = buildHotspotTrace(currentGrid, hotspotVisible);
+      scaleTraces = buildScaleTraces(currentGrid, hotspotVisible);
+
+      var eventsVisible = (layerName === "events" || layerName === "both");
+      eventTraces.forEach(function (t) { t.visible = eventsVisible; });
+
+      var layout = Object.assign({}, el.layout, legendLayoutFor(window.innerWidth, currentLayer));
+      Plotly.react(el, allTraces(), layout, config);
     });
   }
 })();
