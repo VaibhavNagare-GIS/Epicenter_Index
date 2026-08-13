@@ -140,6 +140,60 @@
     items.forEach(function (i) { io.observe(i); });
   }
 
+  // ---- Details tab switcher (Method / Statistics / Charts / Interpretation / Data) ----
+  // Panels hidden at load time render with 0 height, so any accordion item that
+  // starts expanded (aria-expanded="true") inside them gets max-height:0 baked in
+  // by initAccordions() above. Recompute it once that panel actually has layout.
+  function fixAccordionHeights(panel) {
+    if (!panel) return;
+    panel.querySelectorAll('.accordion-trigger[aria-expanded="true"]').forEach(function (btn) {
+      var accPanel = btn.nextElementSibling;
+      var inner = accPanel && accPanel.querySelector(".accordion-panel-inner");
+      if (inner) accPanel.style.maxHeight = inner.scrollHeight + "px";
+    });
+  }
+
+  function initDetailsTabs() {
+    var tabs = document.querySelectorAll(".details-tab");
+    if (!tabs.length) return;
+    var shown = { method: true };
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        var target = tab.getAttribute("data-tab");
+        var panel = document.getElementById(target);
+        if (!panel) return;
+
+        tabs.forEach(function (t) { t.setAttribute("aria-selected", "false"); });
+        tab.setAttribute("aria-selected", "true");
+
+        document.querySelectorAll(".tabpanel").forEach(function (p) { p.hidden = true; });
+        panel.hidden = false;
+
+        if (target === "charts") {
+          // Plotly charts drawn into a display:none container come out at zero
+          // size. Render them for the first time only once the tab (and its
+          // container) actually has real dimensions; resize on later visits
+          // in case the window changed size while the tab was hidden.
+          if (window.EPICENTER_CHARTS) {
+            if (!shown[target]) {
+              window.EPICENTER_CHARTS.renderAll();
+            } else {
+              window.EPICENTER_CHARTS.resize();
+            }
+          }
+        }
+
+        if (!shown[target]) {
+          shown[target] = true;
+          fixAccordionHeights(panel);
+        }
+
+        panel.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     renderKpis();
     renderStatCollage();
@@ -147,5 +201,6 @@
     initAccordions();
     initTableToggle();
     initReveal();
+    initDetailsTabs();
   });
 })();
