@@ -1,9 +1,5 @@
 // Epicenter Index — live-globe.js
-// Renders the live USGS feed (already fetched by live-feed.js) as a second globe
-// view sharing the same #globe-chart canvas as the calculated globe. Also owns
-// the Calculated/Live mode toggle, since it needs to coordinate which globe is
-// mounted, which toolbar is visible, and whether the header "Live feed active"
-// pill is shown.
+// Renders the live USGS feed (already fetched by live-feed.js) as a second globe view sharing the same #globe-chart canvas as the calculated globe. Also owns the Calculated/Live mode toggle, since it needs to coordinate which globe is mounted, which toolbar is visible, and whether the header "Live feed active" pill is shown.
 
 (function () {
   "use strict";
@@ -19,10 +15,7 @@
   };
   var NONE_COLOR = "#5B5F6B";
 
-  // Bucket definition: yellow and orange share one visual bucket because they
-  // already share one colour (see live-feed.js). Keeping them separate in the
-  // filter chips but merged in colour would let two "different" filters look
-  // identical on the globe, which is more confusing than useful.
+  // Bucket definition: yellow and orange share one visual bucket because they already share one colour (see live-feed.js). Keeping them separate in the filter chips but merged in colour would let two "different" filters look identical on the globe, which is more confusing than useful.
   var BUCKETS = [
     { key: "green", label: "Green", color: ALERT_COLOR.green, match: function (a) { return a === "green"; } },
     { key: "yellow", label: "Yellow / Orange", color: ALERT_COLOR.yellow, match: function (a) { return a === "yellow" || a === "orange"; } },
@@ -182,7 +175,7 @@
     if (live.status === "ready") {
       liveFeatures = normalize(live.features);
       if (!liveFeatures.length) {
-        setStatus("No significant earthquakes reported by USGS in the last 30 days.");
+        setStatus("No magnitude 6.0+ earthquakes reported by USGS in the last 12 months.");
         Plotly.purge(el);
         return;
       }
@@ -192,7 +185,7 @@
     } else if (live.status === "error") {
       setStatus("Live feed unavailable right now. This does not affect the calculated globe or the analysis above.");
     } else {
-      setStatus("Loading the last 30 days of significant earthquakes from USGS\u2026");
+      setStatus("Loading the last 12 months of magnitude 6.0+ earthquakes from USGS\u2026");
     }
   }
 
@@ -209,7 +202,7 @@
     if (detail.status === "ready") {
       liveFeatures = normalize(detail.features);
       if (!liveFeatures.length) {
-        setStatus("No significant earthquakes reported by USGS in the last 30 days.");
+        setStatus("No magnitude 6.0+ earthquakes reported by USGS in the last 12 months.");
         return;
       }
       setStatus(null);
@@ -273,8 +266,8 @@
       note: "Colour encodes magnitude class. Marker size scales with magnitude. Hotspot circles scale with event count per cell."
     },
     live: {
-      desc: "The same globe, now showing whatever USGS has recorded as significant in the last 30 days. USGS's \"significant\" feed is based on a significance score (magnitude, felt reports, and estimated impact), not a fixed magnitude cutoff, so it can include events below magnitude 6.5. That's why the numbers here differ from the historical dataset.",
-      note: "Colour encodes the official USGS alert level. Marker size scales with magnitude. This layer updates on every page load and is not part of the cited 1995\u20132023 dataset."
+      desc: "The same globe, now showing every USGS-recorded earthquake of magnitude 6.0 or above from the last 12 months, queried directly from USGS's event catalog. That's a rolling window, not the fixed, cited 1995\u20132023 dataset above, so the exact count changes over time.",
+      note: "Colour encodes the official USGS PAGER alert level, only assigned to large or high-impact events; most events here still show as \"No alert level.\" Marker size scales with magnitude. This layer is not part of the cited 1995\u20132023 dataset."
     }
   };
 
